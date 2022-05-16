@@ -1,24 +1,9 @@
-import { useEffect, useState } from "react";
-import { api } from "../../services/api";
+import { useTransaction } from "../../hooks/useTransaction";
 import { dateFormat, moneyFormat } from "../../utils/Format";
 import { Container } from "./styles";
 
-interface RowsStateProps {
-  id: number;
-  title: string;
-  type: "withdraw" | "deposit";
-  amount: number;
-  createdAt: string;
-}
-
 export function TransactionsTable() {
-  const [transactions, setTransactions] = useState<RowsStateProps[]>([]);
-
-  useEffect(() => {
-    api
-      .get("transactions")
-      .then((response) => setTransactions(response.data.transactions));
-  }, []);
+  const { transactions } = useTransaction();
 
   return (
     <Container>

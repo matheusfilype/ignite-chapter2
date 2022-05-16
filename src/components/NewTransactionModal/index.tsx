@@ -6,6 +6,7 @@ import incomeImg from "../../assets/income.svg";
 import outcomeImg from "../../assets/outcome.svg";
 import { FormEvent, useState } from "react";
 import { api } from "../../services/api";
+import { useTransaction } from "../../hooks/useTransaction";
 
 ReactModal.setAppElement("#root");
 
@@ -24,20 +25,23 @@ export function NewTransactionModal({
   isOpen,
   onRequestClose,
 }: NewTransactionModalProps) {
-  const [type, setType] = useState("deposit");
+  const [type, setType] = useState<"deposit" | "withdraw">("deposit");
+  const { createTransaction } = useTransaction();
 
-  function handleCreateNewTransaction(e: FormEvent) {
+  async function handleCreateNewTransaction(e: FormEvent) {
     e.preventDefault();
 
     const { title, price, category } = e.target as TargetFormValues;
 
     const data = {
       title: title.value,
-      price: price.value,
+      amount: Number(price.value),
+      type,
       category: category.value,
     };
 
-    api.post("/transactions", data);
+    await createTransaction(data);
+    onRequestClose();
   }
 
   return (
