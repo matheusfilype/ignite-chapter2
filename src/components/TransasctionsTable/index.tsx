@@ -1,6 +1,25 @@
+import { useEffect, useState } from "react";
+import { api } from "../../services/api";
+import { dateFormat, moneyFormat } from "../../utils/Format";
 import { Container } from "./styles";
 
+interface RowsStateProps {
+  id: number;
+  title: string;
+  type: "withdraw" | "deposit";
+  amount: number;
+  createdAt: string;
+}
+
 export function TransactionsTable() {
+  const [transactions, setTransactions] = useState<RowsStateProps[]>([]);
+
+  useEffect(() => {
+    api
+      .get("transactions")
+      .then((response) => setTransactions(response.data.transactions));
+  }, []);
+
   return (
     <Container>
       <table>
@@ -14,18 +33,16 @@ export function TransactionsTable() {
         </thead>
 
         <tbody>
-          <tr>
-            <td>Desenvolvimento de Website</td>
-            <td className="deposit">R$12.000</td>
-            <td>Desenvolvimento</td>
-            <td>20/02/2021</td>
-          </tr>
-          <tr>
-            <td>Carro</td>
-            <td className="withdraw">-R$1.100</td>
-            <td>Casa</td>
-            <td>21/02/201</td>
-          </tr>
+          {transactions?.map((transaction) => (
+            <tr key={transaction.id}>
+              <td>{transaction.title}</td>
+              <td className={transaction.type}>
+                {moneyFormat(transaction.amount)}
+              </td>
+              <td>{transaction.title}</td>
+              <td>{dateFormat(transaction.createdAt)}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </Container>
